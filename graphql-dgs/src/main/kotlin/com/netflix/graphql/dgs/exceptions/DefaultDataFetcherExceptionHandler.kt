@@ -52,6 +52,9 @@ class DefaultDataFetcherExceptionHandler : DataFetcherExceptionHandler {
         } else if (exception is DgsBadRequestException) {
             TypedGraphQLError.newBadRequestBuilder().message("%s: %s", exception::class.java.name, exception.message)
                 .path(handlerParameters.path).build()
+        } else if (exception is DgsRateLimitException) {
+            TypedGraphQLError.newTooManyRequestsBuilder().message("%s: %s", exception::class.java.name, exception.message)
+                .path(handlerParameters.path).build()
         } else {
             TypedGraphQLError.newInternalErrorBuilder().message("%s: %s", exception::class.java.name, exception.message)
                 .path(handlerParameters.path).build()

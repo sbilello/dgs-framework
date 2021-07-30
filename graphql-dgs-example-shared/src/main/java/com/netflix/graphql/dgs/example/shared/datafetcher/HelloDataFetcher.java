@@ -102,4 +102,10 @@ public class HelloDataFetcher {
     public Connection<Message> withPagination(DataFetchingEnvironment env) {
        return new SimpleListConnection<>(Collections.singletonList(new Message("This is a generated connection"))).get(env);
     }
+
+    @DgsQuery
+    @DgsRateLimit(field = "withRateLimitException")
+    public String withRateLimitException(DataFetchingEnvironment env) {
+        return "ciao";
+    }
 }

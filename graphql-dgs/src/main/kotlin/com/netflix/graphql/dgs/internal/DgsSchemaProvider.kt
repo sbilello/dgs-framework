@@ -21,10 +21,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.netflix.graphql.dgs.*
 import com.netflix.graphql.dgs.context.DgsContext
-import com.netflix.graphql.dgs.exceptions.DgsInvalidInputArgumentException
-import com.netflix.graphql.dgs.exceptions.InvalidDgsConfigurationException
-import com.netflix.graphql.dgs.exceptions.InvalidTypeResolverException
-import com.netflix.graphql.dgs.exceptions.NoSchemaFoundException
+import com.netflix.graphql.dgs.exceptions.*
 import com.netflix.graphql.dgs.federation.DefaultDgsFederationResolver
 import com.netflix.graphql.mocking.DgsSchemaTransformer
 import com.netflix.graphql.mocking.MockProvider
@@ -312,6 +309,21 @@ class DgsSchemaProvider(
             }
         }
     }
+    /**
+     This is a raw design just to open a discussion.
+     Maybe we can consider to add an interface that can be used to implement Custom Annotation logic.
+     As consequence: we would allow to any developer to extend the logic with just annotations and without injecting multiple Instrumentation Beans in the IoC
+     This can be another way to avoid to deal with {Instrumentation} and to write less code because it is annotation based.
+     It is also an efficient way to skip the DataFetcher execution when it might be necessary.
+     **/
+    private fun evaluateRateLimiter(method: Method, dgsComponent: Any, environment: DataFetchingEnvironment) {
+        if (method.isAnnotationPresent(DgsRateLimit::class.java)) {
+            val annotation = AnnotationUtils.getAnnotation(method, DgsRateLimit::class.java)!!
+            val fieldName = AnnotationUtils.getAnnotationAttributes(annotation)["field"] as String
+            // TODO Implement your custom RateLimit logic
+            throw DgsRateLimitException("Over quota for '$fieldName'")
+        }
+    }
 
     private fun invokeDataFetcher(method: Method, dgsComponent: Any, environment: DataFetchingEnvironment): Any? {
         val args = mutableListOf<Any?>()
@@ -439,6 +451,9 @@ class DgsSchemaProvider(
             }
         }
 
+        if (method.isAnnotationPresent(DgsRateLimit::class.java)) {
+            evaluateRateLimiter(method, dgsComponent, environment)
+        }
         return if (method.kotlinFunction?.isSuspend == true) {
 
             val launch = CoroutineScope(Dispatchers.Unconfined).async {

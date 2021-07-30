@@ -219,6 +219,14 @@ public class TypedGraphQLError implements GraphQLError {
         return new Builder().errorType(ErrorType.BAD_REQUEST);
     }
 
+    /**
+     * Create new Builder instance to customize error.
+     * @return A new TypedGraphQLError.Builder instance to further customize the error. Pre-sets ErrorType.BAD_REQUEST.
+     */
+    public static Builder newTooManyRequestsBuilder() {
+        return new Builder().errorType(ErrorType.TOO_MANY_REQUESTS);
+    }
+
 
     @Override
     public String toString() {

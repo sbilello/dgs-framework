@@ -95,4 +95,15 @@ class HelloDataFetcherTest {
             assertThat(ex.getErrors().size()).isEqualTo(2);
         }
     }
+
+    @Test
+    void getQueryWithRateLimitException() {
+        try {
+            queryExecutor.executeAndExtractJsonPath("{withRateLimitException}", "data.greeting");
+            fail("Exception should have been thrown");
+        } catch (QueryException ex) {
+            assertThat(ex.getErrors().get(0).getMessage()).isEqualTo("com.netflix.graphql.dgs.exceptions.DgsRateLimitException: Over quota for 'withRateLimitException'");
+            assertThat(ex.getErrors().size()).isEqualTo(1);
+        }
+    }
 }

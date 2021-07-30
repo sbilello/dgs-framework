@@ -116,6 +116,15 @@ public enum ErrorType implements ErrorClassification {
     BAD_REQUEST,
 
     /*
+     * Bad Request.
+     *
+     * Too Many Requests.
+     *
+     * HTTP Mapping: 409 Bad Request
+     */
+    TOO_MANY_REQUESTS,
+
+    /*
      * Currently Unavailable.
      *
      * The service is currently unavailable.  This is most likely a

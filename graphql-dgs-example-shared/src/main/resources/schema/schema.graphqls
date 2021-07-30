@@ -8,6 +8,7 @@ type Query {
     messageFromBatchLoader: String
     messagesWithExceptionFromBatchLoader: [Message]
 
+
 #    #Custom scalar example
 #    now: LocalTime
 #    schedule(time: LocalTime): Boolean
@@ -15,6 +16,8 @@ type Query {
     #To show how exceptions are handled
     withGraphqlException: String
     withRuntimeException: String
+    #TODO to implement RateLimit Logic
+    withRateLimitException: String
 
     concurrent1: Int
     concurrent2: Int
